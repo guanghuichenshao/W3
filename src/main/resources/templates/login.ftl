@@ -18,8 +18,7 @@
 						<a href="javascript:void(0)" id="sticky_a10"></a>
 				</div>
 				<div class="modal-body" data-backdrop="static">
-					<form method="post" action="/user/login" name="login_form"
-						id="login_form">
+
 
 
 						<div class="alert alert-info">请登录易圣通灌水大乐园，请不要发布违法信息，否则，你懂得！</div>
@@ -50,7 +49,7 @@
 
 						</div>
 						<div class="btm_b clearfix"></div>
-					</form>
+
 					<div class="modal-footer">
 						<button class="btn btn-inverse pull-right" type="button"
 							onclick="login()">登录</button>

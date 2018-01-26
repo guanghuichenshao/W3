@@ -261,6 +261,7 @@
 <script src="/static/lib/complexify/jquery.complexify.min.js"></script>
 <!-- form functions -->
 <script src="/static/js/myforms.js"></script>
+<script src="/static/js/jquery.bootstrap-growl.js"></script>
 
 
 <!-- tables functions -->
@@ -346,6 +347,7 @@
         $('#password').val(password);
         //选中
         $("input[name='sun']").attr("checked", "checked");
+        window.setInterval("consumerMsg()",2000);
 
     });
 
@@ -360,9 +362,48 @@
             document.getElementById("sticky_a2").click();
             return;
         }
+        var username=document.all.username.value;
+        var password=document.all.password.value;
+        var b=$('#sun').is(':checked')==true?"on":"off";
+        $.ajax({
+            type:"post",
+            dataType:"text",
+            url:"/user/login/"+username+"/"+password+"/"+b,
+            success:function(data){
+                if(data.indexOf("0")!=-1){
 
-        document.all.login_form.submit();
+                }else{
+                    console.log(data)
+                    window.location="/article/queryz/1"
+                    console.log(data)
+                }
+            }
 
+        });
+        //document.all.login_form.submit();
+
+    }
+    function consumerMsg(){
+        var uid= <#if username??> ${userid}<#else>0 </#if>
+        if(uid==0){
+            return
+        }
+        $.ajax({
+            type:"post",
+            dataType:"text json",
+            url:"/article/con/"+uid,
+            success:function(data){
+                $(data).each(function(index){
+                    $.bootstrapGrowl("帖子【"+data[index].title+"】被回复了！他回复的标题是【"+data[index].rtitle+"】",{
+                        type: 'danger',
+                        width: 'auto',
+                        allow_dismiss: false
+                    });
+
+                })
+            }
+
+        })
     }
     //删除从贴
     function del(id,rootid) {
