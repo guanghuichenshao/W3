@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,7 +73,16 @@ public class UserController {
             user=service.uploadPic(request,commonsMultipartResolver);
             service.register(user);
         }
-        FreemarkerUtils.forward("show",null,response);
+        //FreemarkerUtils.forward("show",null,response);
+        RequestDispatcher dispatcher=request.getRequestDispatcher("/article/queryz/1");
+
+        try {
+            dispatcher.forward(request,response);
+        } catch (ServletException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
 
@@ -98,17 +108,24 @@ public class UserController {
 
         //FreemarkerUtils.forward("show",null,response);
     }
-    @RequestMapping(value = {"/login"})
-    public void login(Bbsuser user, HttpServletResponse response,HttpServletRequest request,ModelMap model){
+    @RequestMapping(value = {"/login/{username}/{password}/{sun}"})
+    public void login(@PathVariable String username,@PathVariable String password,@PathVariable String sun,
+            HttpServletResponse response,HttpServletRequest request,ModelMap model){
+        String flag="0";
         //Map map=new HashMap();
+        Bbsuser user=new Bbsuser();
+        user.setUsername(username);
+        user.setPassword(password);
         Bbsuser user1=service.login(user);
         if(user1!=null){
+            request.getSession().setAttribute("username",user1.getUsername());
+            request.getSession().setAttribute("userid",user1.getUserid());
 
             //map.put("username",user1.getUsername());
             //map.put("userid",user1.getUserid());
 
 
-            if(user.getSun().equals("on")){//勾选7天
+            if(sun.equals("on")){//勾选7天
                 Cookie cookie=new Cookie("papaoku",user.getUsername());
                 cookie.setMaxAge(3600*24*7);
 
@@ -118,24 +135,37 @@ public class UserController {
                 response.addCookie(cookie1);
             }
             //model.put("user",user);
+            flag=String.valueOf(user1.getUserid());
 
         }else{
             //map.put("username",null);
 
         }
+        response.setContentType("text/html");
+        response.setCharacterEncoding("utf-8");
 
-        request.getSession().setAttribute("username",user1.getUsername());
-        request.getSession().setAttribute("userid",user1.getUserid());
-        //request.getSession().setAttribute("pagenum",user1.getPagenum());
-        RequestDispatcher dispatcher=request.getRequestDispatcher("/article/queryz/1");
 
         try {
-            dispatcher.forward(request,response);
-        } catch (ServletException e) {
-            e.printStackTrace();
+            PrintWriter out=response.getWriter();
+            out.print(flag);
+            out.flush();
+            out.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+//        request.getSession().setAttribute("username",user1.getUsername());
+//        request.getSession().setAttribute("userid",user1.getUserid());
+//        //request.getSession().setAttribute("pagenum",user1.getPagenum());
+//        RequestDispatcher dispatcher=request.getRequestDispatcher("/article/queryz/1");
+//
+//        try {
+//            dispatcher.forward(request,response);
+//        } catch (ServletException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
     }
 }
