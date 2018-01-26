@@ -23,6 +23,6 @@ public interface IArticleDao extends CrudRepository<Article,Integer >{
     @Modifying
     @Query("delete from Article where id=:id or rootid=:id")
     public void delz(@Param("id") Integer id);
-    @Query("select c from Article c where id= (select a.rootid from Article a where id=:id)")
+    @Query("select a from Article a where id=:id")
     public Article findOne(@Param("id") Integer id);
 }
