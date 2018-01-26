@@ -1,0 +1,93 @@
+spring:
+  datasource:
+        name: test
+        url: jdbc:mysql://127.0.0.1:3306/bbs?useUnicode=true&characterEncoding=utf-8
+        username: root
+        password: root
+        # 使用druid数据源
+        type: com.alibaba.druid.pool.DruidDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        maxActive: 20
+        initialSize: 1
+        maxWait: 60000
+        minIdle: 1
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: select 'x'
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        poolPreparedStatements: true
+        maxOpenPreparedStatements: 20
+  jpa:
+        database : MYSQL
+        show-sql : true
+        format-sql: true
+        hibernate:
+          ddl-auto : update
+          naming-strategy : org.hibernate.cfg.ImprovedNamingStrategy
+        properties:
+          hibernate:
+            dialect : org.hibernate.dialect.MySQL5Dialect
+  kafka:
+        producer:
+            #重试发送为0次，不重试发送
+          retries: 0
+            #每次批量发送消息的数量
+             #/当同时有大量消息要向同一个分区发送时，Producer端会将消息打包后进行批量发送。如果设置为0，则每条消息都独立发送。默认为16384字节
+          batch-size: 16384
+            #处理消费者的缓存内存大小
+            #   //消息缓冲池大小。尚未被发送的消息会保存在Producer的内存中，如果消息产生的速度大于消息发送的速度，那么缓冲池满后发送消息的请求会被阻塞。默认33554432字节（32MB）
+          buffer-memory: 33554432
+            #//指定KEY采用哪种序列化方式将消息传输给Boker,你也可以在发送消息的时候指定序列化类型，不指定则以此为默认序列化类型
+          key-serializer: org.apache.kafka.common.serialization.StringSerializer
+            #//指定VALUE采用哪种序列化方式将消息传输给Boker,你也可以在发送消息的时候指定序列化类型，不指定则以此为默认序列化类型
+          value-serializer: org.apache.kafka.common.serialization.StringSerializer
+             #//发送消息前等待的毫秒数，与batch.size配合使用。在消息负载不高的情况下，配置linger.ms能够让Producer在发送消息前等待一定时间，以积累更多的消息打包发送，达到节省网络资源的目的。默认为0
+          linger-ms : 1
+            #连接的服务器IP，可以搭建集群
+          bootstrap-servers: localhost:9092
+            # //broker消息确认的模式，有三种：默认1
+            #0：不进行消息接收确认，即Client端发送完成后不会等待Broker的确认
+            #1：由Leader确认，Leader接收到消息后会立即返回确认信息
+            #all：集群完整确认，Leader会等待所有in-sync的follower节点都确认收到消息后，再返回确认信息
+          acks: all
+        consumer:
+          #连接的服务器IP，可以搭建集群
+          bootstrap-servers: localhost:9092
+           #指定消费组（没有它会自动添加）
+            #Consumer的group id，同一个group下的多个Consumer不会拉取到重复的消息，不同group下的Consumer则会保证拉取到每一条消息。注意，同一个group下的consumer数量不能超过分区数。必须要使用别的组名称， 如果生产者和消费者都在同一组，则不能访问同一组内的topic数据
+          group-id: fool
+            #earliest
+             #当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，从头开始消费
+             #latest
+             #当各分区下有已提交的offset时，从提交的offset开始消费；无提交的offset时，消费新产生的该分区下的数据
+             #none
+             #topic各分区都存在已提交的offset时，从offset后开始消费；只要有一个分区不存在已提交的offset，则抛出异常
+             #原由是Kafka新的消费者，默认情况下会从最后一条消费进行消费，就是开始消费的时候，
+             # 会从新增加的消息开始处理，即从我开始添加的1000条以后，才会开始处理。
+            #所以必须要设置auto.offset.reset设置新加入的消费者，从头条开始处理消费。当然有些情况，
+             #可能需要从最新的开始处理。
+
+          auto-offset-reset: earliest
+
+            #auto-offset-reset: smallest
+              #是否自动周期性提交已经拉取到消费端的消息offset 接收到 肯定能接收到，但是如果设置是false
+              #那么你就必须手动提交，否则，他会把以前没消费的数据一起取出来，如果自动提交。之后将不再看到重复数据
+            #是否自动提交已拉取消息的offset。提交offset即视为该消息已经成功被消费，
+            #该组下的Consumer无法再拉取到该消息（除非手动修改offset）。默认为true
+          enable-auto-commit: false
+            #// 指定多久消费者更新offset到zookeeper中。注意offset更新时基于time而不是每次获得的消息。
+            #一旦在更新zookeeper发生异常并重启，将可能拿到已拿到过的消息
+            # //自动提交offset的间隔毫秒数，默认5000。
+            #本 例中采用的是自动提交offset，Kafka client会启动一个线程定期将offset提交至broker。
+            #假设在自动提交的间隔内发生故障（比如整个JVM进程死掉），那么有一部分消息是会被 重复消费的。
+            #要避免这一问题，可使用手动提交offset的方式。构造consumer时将enable.auto.commit设为false，
+            #并在代 码中用consumer.commitSync()来手动提交。
+          auto-commit-interval-ms: 1000
+            #//指定KEY采用哪种序列化方式将消息传输给Boker,你也可以在发送消息的时候指定序列化类型，不指定则以此为默认序列化类型
+          key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            #//指定VALUE采用哪种序列化方式将消息传输给Boker,你也可以在发送消息的时候指定序列化类型，不指定则以此为默认序列化类型
+          value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+          session-timeout-ms: 30000
