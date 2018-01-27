@@ -110,7 +110,7 @@
             <div class="navbar-inner">
                 <div class="container-fluid">
                     <a class="brand" href="http://www.papaok.org"><i
-                            class="icon-home icon-white"></i> 易圣通灌水大乐园 <span class="sml_t">2.0</span></a>
+                            class="icon-home icon-white"></i> 易圣通灌水大乐园 <span class="sml_t">2.0.2</span></a>
 
 
 
@@ -141,17 +141,23 @@
 
                             <b class="caret"></b></a>
                             <ul class="dropdown-menu">
+<#if username??><#else >
                                 <li><a data-toggle="modal" id="my"
                                        data-backdrop="static"
                                        href="#login" title="登录"
                                        onclick="javascript:document.getElementById('submenu').innerHTML='登录'">登录
-                                </a></li>
+                                </a></li></#if>
                                 <li><a data-toggle="modal" id="my" data-backdrop="static"
                                        href="#register" title="注册"
                                        onclick="javascript:document.getElementById('submenu').innerHTML='注册'">注册</a>
 
 
                                 </li>
+<#if username??>
+                                <li><a href="http://baidu.com">修改头像</a>
+
+
+                                </li></#if>
 
 
                                 <#if username??>
@@ -162,10 +168,10 @@
 
 
                                 </li>
-
+<#if username??>
                                 <li class="divider"></li>
                                 <li><a href="/user/logout"
-                                       onclick="javascript:document.getElementById('submenu').innerHTML=''">退出当前用户</a></li>
+                                       onclick="javascript:document.getElementById('submenu').innerHTML=''">退出当前用户</a></li></#if>
                             </ul></li>
                     </ul>
 

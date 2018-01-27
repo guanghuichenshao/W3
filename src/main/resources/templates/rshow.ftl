@@ -41,11 +41,11 @@
 		
 	
 			<input type="hidden" id="rshowid" value="" name="rshowid"/>
-			
-			
-			<a class="btn btn-info" href="" title="回灌" data-toggle="modal"
+
+
+<#if username??><a class="btn btn-info" href="" title="回灌" data-toggle="modal"
 				id="myr" data-backdrop="static"
-				onclick="javascript:addc();document.getElementById('submenu').innerHTML='回灌'">回灌 </a>
+				onclick="javascript:addc();document.getElementById('submenu').innerHTML='回灌'">回灌 </a></#if>
 	</div>
 </div>
 
